@@ -31,11 +31,17 @@ export const createAssociate = async (associate: Omit<Associate, "id">): Promise
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(associate),
+        body: JSON.stringify({
+            project_id: associate.project_id,
+            associate_id: associate.associate_id,
+        }),
     });
+
     if (!response.ok) {
-        throw new Error("Failed to create associate relationship");
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || "Failed to create associate relationship");
     }
+
     const data = (await response.json()) as Associate;
     return data;
 };
